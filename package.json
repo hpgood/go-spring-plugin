@@ -3,7 +3,7 @@
   "displayName": "go-spring",
   "description": "auto add setter,tag,name for struct with go-spring project",
   "keywords": ["go-spring","goca"],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "GanceGuo",
   "engines": {
     "vscode": "^1.90.0"
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/hpgood/vscode-go-spring"
+    "url": "https://github.com/hpgood/go-spring-plugin"
     },
   "icon": "icon/logo.png", 
   "activationEvents": [],

@@ -173,7 +173,7 @@ export class CodeProcess {
                 }
                 setter+= `\n`;
                 setter+= `// Name \n`;
-                setter+= `func (t ${structName}) Name() string {\n`;
+                setter+= `func (t ${structName}) BeanName() string {\n`;
                 setter+= `\treturn "${snake}"\n`;
                 setter+= "}\n";
             }
