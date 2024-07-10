@@ -26,6 +26,7 @@ go-spring.add-bean-name    // add Name() string for struct
 select one line of struct variable and press ctrl+shift+p ,to open cmd:
 ```
 go-spring.add-bean-tag     // add tag for the var
+go-spring.var-setter       // add tag for var
 ```
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
@@ -59,7 +60,9 @@ Initial release
 
 Change Name() to BeanName()
 
+### 1.0.2
 
+add common setter 
 
 ---
 

@@ -7,6 +7,18 @@ interface beanT {
     type: String;
     bean: String;
 }
+
+interface varT {
+    name: String;
+    type: String;
+}
+
+interface Result {
+    Code: String;
+    Line: number;
+    Err: String;
+}
+
 export class CodeProcess {
 
     constructor( ) {}
@@ -15,6 +27,7 @@ export class CodeProcess {
 
     private reLastReg: RegExp = /[\s]?}[\s]?/;
     private reBeanReg: RegExp = /[\s]*([A-Za-z0-9_]+)[\s]+([\*\s]*[A-Za-z0-9_\.]+)[\s]+`.*bean:[\s]*"([A-Za-z0-9_]+)".*`[\s]*/;
+    private reVarReg: RegExp = /[\s]*([A-Za-z0-9_]+)[\s]+([\*\s]*[A-Za-z0-9_\.]+)[\s]*/;
     private reNameReg: RegExp = /[\s]*([A-Za-z0-9_]+)[\s]+([\*\s]*[A-Za-z0-9_\.]+)[\s]*/;
 
  
@@ -36,7 +49,9 @@ export class CodeProcess {
      * @return {string} transformed text
      */
     convertSetter(structCode: string,fullText: string): string {
-        if (!structCode) return structCode;
+        if (!structCode) {
+            return structCode;
+        }
 
  
         let arr=structCode.split("\n");
@@ -112,6 +127,135 @@ export class CodeProcess {
 
     }
 
+    /**
+     * convert setter for var 
+     *
+     * @param {string} code origin text
+     * @return {string} transformed text
+     */
+    convertCommonSetter(selection :vscode.Range,structCode: string,fullText: string): Result {
+        if (!structCode) {
+            return  {Code:structCode,Line:0,Err:"no data"};
+        }
+
+ 
+        let arr=structCode.split("\n");
+        // vscode.window.showInformationMessage('>arr.size='+arr.length);
+        let isStruct=false;
+        let hasLast=false;
+        let structName="";
+
+
+        arr.every(element => {
+            let r=element.match(this.reStructReg);
+ 
+            if(r && r.length>=2){
+                // vscode.window.showInformationMessage('check:result.length='+r.length+'r0='+r[0]+'r1='+r[1]);
+                structName=r[1];
+                isStruct=true;
+                return false;
+            } 
+            return true;
+        });
+
+
+        let lines=fullText.split("\n");
+
+        let insertLine=0;
+
+        if(!isStruct){
+            //向上查找 struct 的名字
+            let line=selection.start.line;
+            for(let i=line-1;i>=0;i--){
+                let content=lines[i];
+                let r=content.match(this.reStructReg);
+ 
+                if(r && r.length>=2){
+                    // vscode.window.showInformationMessage('check:result.length='+r.length+'r0='+r[0]+'r1='+r[1]);
+                    structName=r[1];
+                    isStruct=true;
+                    break;
+                } 
+            }
+        }
+
+
+        let selection_last=selection.end.line;
+
+        for(let i=selection_last+1;i<lines.length;i++){
+            let content=lines[i];
+            let r=content.match(this.reLastReg);
+
+            if(r){
+                insertLine=i+1;
+                break;
+            } 
+        }
+
+        if(!isStruct){
+            return {Code:"",Line:0,Err:"wrong struct"};
+        }
+
+        vscode.window.showInformationMessage('structName='+structName);
+
+        // type beanT={bean:'',type:''};
+
+        let vars:Array<varT>=[];
+        arr.forEach(element => {
+             
+            if(element.includes("type") && element.includes("struct")){
+                return;
+            }
+            if(element.includes("{") || element.includes("}")){
+                return;
+            }
+            let beanResult=element.match(this.reVarReg);
+            if(beanResult && beanResult.length>=3 ){
+   
+                let name=beanResult[1];
+                let beanType=beanResult[2];
+                let obj={name,type:beanType};
+                vars.push(obj);
+            }
+            if(element.match(this.reLastReg)){
+                hasLast=true;
+            }
+       
+            
+        });
+
+        let setter="";
+ 
+        vscode.window.showInformationMessage('vars.length='+vars.length);
+
+        vars.forEach((item)=>{
+ 
+            let beanType=item.type;
+            let name=item.name;
+            let beanUpper=name.substring(0,1).toUpperCase()+name.substring(1);
+
+            let methodName=`Set${beanUpper}`;
+
+            if(!fullText.includes(methodName)){
+                setter+= `\n`;
+                setter+= `// set ${name} \n`;
+                setter+= `func (t *${structName}) ${methodName}(arg ${beanType}) {\n`;
+                setter+= `\tt.${name} = arg\n`;
+                setter+= "}\n";
+            }
+
+        });
+        // setter+="//bean setter end\n";
+           
+        if(insertLine>(lines.length-1)){
+            insertLine=lines.length-1;
+        }
+        
+               
+        return  {Code:setter,Line:insertLine,Err:""}; ;
+
+    }
+
     autoAddTag(code: string): string{
         let arr=code.split("\n");
         let ret:Array<string>=[];
@@ -133,7 +277,9 @@ export class CodeProcess {
     }
 
     convertBeanName(structCode: string,fullText: string): string {
-        if (!structCode) return structCode;
+        if (!structCode){
+            return structCode;
+        }
 
  
         let arr=structCode.split("\n");

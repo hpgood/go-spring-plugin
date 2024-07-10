@@ -11,3 +11,7 @@ Initial release
 ### 1.0.1
 
 Change Name() to BeanName()
+
+### 1.0.2
+
+add common setter 

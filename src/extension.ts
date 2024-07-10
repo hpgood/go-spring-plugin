@@ -74,6 +74,43 @@ export function activate(context: vscode.ExtensionContext) {
 		
 
 	});
+
+	const disposableCommonSetter = vscode.commands.registerTextEditorCommand('go-spring.var-setter', (textEditor, edit) => {
+		// The code you place here will be executed every time your command is executed
+		// Display a message box to the user
+		
+		const doc = textEditor.document;
+        let selection: vscode.Selection | vscode.Range = textEditor.selection;
+ 
+
+        //获取选中区域
+        if (selection.isEmpty) {
+            const start = new vscode.Position(0, 0);
+            const end = new vscode.Position(doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length);
+            selection = new vscode.Range(start, end);
+        }
+        
+        let text = doc.getText(selection);
+
+		// vscode.window.showInformationMessage('text='+text);
+		let fullText=doc.getText();
+
+	 
+
+		let result=process.convertCommonSetter(selection,text,fullText);
+		if(result.Err !==''  ){
+			vscode.window.showInformationMessage('Err:'+result.Err);
+		}else if(  result.Code===''){
+			vscode.window.showInformationMessage('no change.');
+		}else{
+			textEditor.edit( (builder:any) => {
+				let position=new vscode.Position(result.Line,0);
+				builder.insert(position, result.Code);
+			});
+		}
+		
+
+	});
 	const disposableName = vscode.commands.registerTextEditorCommand('go-spring.add-bean-name', (textEditor, edit) => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
@@ -105,6 +142,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposableTab);
 	context.subscriptions.push(disposableSetter);
+	context.subscriptions.push(disposableCommonSetter);
 	context.subscriptions.push(disposableName);
 }
 
