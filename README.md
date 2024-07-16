@@ -64,6 +64,10 @@ Change Name() to BeanName()
 
 add common setter 
 
+### 1.0.3
+
+fix bug. focus on one line.
+
 ---
 
 ## Following extension guidelines

@@ -42,6 +42,12 @@ export class CodeProcess {
       
     }
 
+    getSpliter(code :string): string{
+        if(code.includes("\r\n")){
+            return "\r\n";
+        }
+        return "\n";
+    }
     /**
      * convert setter
      *
@@ -128,23 +134,46 @@ export class CodeProcess {
     }
 
     /**
-     * convert setter for var 
+     * convert Setter for var 
      *
      * @param {string} code origin text
      * @return {string} transformed text
      */
-    convertCommonSetter(selection :vscode.Range,structCode: string,fullText: string): Result {
-        if (!structCode) {
-            return  {Code:structCode,Line:0,Err:"no data"};
-        }
+    convertCommonSetter(position:vscode.Position,selection :vscode.Range,structCode: string,fullText: string): Result {
+        return this.convertCommonGetterOrSetter(position,selection,structCode,fullText,false);
+    }
+  /**
+     * convert Getter for var 
+     *
+     * @param {string} code origin text
+     * @return {string} transformed text
+     */
 
- 
-        let arr=structCode.split("\n");
+    convertCommonGetter(position:vscode.Position,selection :vscode.Range,structCode: string,fullText: string): Result {
+
+        return this.convertCommonGetterOrSetter(position,selection,structCode,fullText,true);
+
+    }
+       /**
+     * convert Getter/Setter for var 
+     *
+     * @param {string} code origin text
+     * @return {string} transformed text
+     */
+       convertCommonGetterOrSetter(position:vscode.Position,selection :vscode.Range,structCode: string,fullText: string,isGet :boolean): Result {
+        // if (!structCode) {
+        //     return  {Code:structCode,Line:0,Err:"no data"};
+        // }
+
+        let sp=this.getSpliter(structCode);
+        let arr=structCode.split(sp);
         // vscode.window.showInformationMessage('>arr.size='+arr.length);
         let isStruct=false;
         let hasLast=false;
         let structName="";
 
+
+        // vscode.window.showInformationMessage('find: structCode='+structCode);
 
         arr.every(element => {
             let r=element.match(this.reStructReg);
@@ -159,7 +188,7 @@ export class CodeProcess {
         });
 
 
-        let lines=fullText.split("\n");
+        let lines=fullText.split(sp);
 
         let insertLine=0;
 
@@ -169,7 +198,7 @@ export class CodeProcess {
             for(let i=line-1;i>=0;i--){
                 let content=lines[i];
                 let r=content.match(this.reStructReg);
- 
+                // vscode.window.showInformationMessage('check: content='+content);
                 if(r && r.length>=2){
                     // vscode.window.showInformationMessage('check:result.length='+r.length+'r0='+r[0]+'r1='+r[1]);
                     structName=r[1];
@@ -196,7 +225,7 @@ export class CodeProcess {
             return {Code:"",Line:0,Err:"wrong struct"};
         }
 
-        vscode.window.showInformationMessage('structName='+structName);
+        // vscode.window.showInformationMessage('find: insertLine='+insertLine);
 
         // type beanT={bean:'',type:''};
 
@@ -224,9 +253,9 @@ export class CodeProcess {
             
         });
 
-        let setter="";
+        let setOrgetter="";//isGet
  
-        vscode.window.showInformationMessage('vars.length='+vars.length);
+        // vscode.window.showInformationMessage('vars.length='+vars.length);
 
         vars.forEach((item)=>{
  
@@ -234,30 +263,38 @@ export class CodeProcess {
             let name=item.name;
             let beanUpper=name.substring(0,1).toUpperCase()+name.substring(1);
 
-            let methodName=`Set${beanUpper}`;
+            let methodName="";
+            if(isGet){
+                methodName=`Get${beanUpper}`;
+            }else{
+                methodName=`Set${beanUpper}`;
+            }
 
             if(!fullText.includes(methodName)){
-                setter+= `\n`;
-                setter+= `// set ${name} \n`;
-                setter+= `func (t *${structName}) ${methodName}(arg ${beanType}) {\n`;
-                setter+= `\tt.${name} = arg\n`;
-                setter+= "}\n";
+                setOrgetter+= sp;
+                setOrgetter+= `// set ${name} ${sp}`;
+                setOrgetter+= `func (t *${structName}) ${methodName}(arg ${beanType}) {${sp}`;
+                setOrgetter+= `\tt.${name} = arg${sp}`;
+                setOrgetter+= `}${sp}`;
             }
 
         });
-        // setter+="//bean setter end\n";
-           
+  
         if(insertLine>(lines.length-1)){
             insertLine=lines.length-1;
         }
         
                
-        return  {Code:setter,Line:insertLine,Err:""}; ;
+        return  {Code:setOrgetter,Line:insertLine,Err:""}; ;
 
     }
 
     autoAddTag(code: string): string{
-        let arr=code.split("\n");
+
+        let sp=this.getSpliter(code);
+        
+
+        let arr=code.split(sp);
         let ret:Array<string>=[];
         arr.forEach((item)=>{
             let d=item;
@@ -273,7 +310,7 @@ export class CodeProcess {
                 ret.push(d);
             }
         });
-        return ret.join("\n");
+        return ret.join(sp);
     }
 
     convertBeanName(structCode: string,fullText: string): string {

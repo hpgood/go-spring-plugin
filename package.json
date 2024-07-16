@@ -3,7 +3,7 @@
   "displayName": "go-spring",
   "description": "auto add setter,tag,name for struct with go-spring project",
   "keywords": ["go-spring","goca"],
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "GanceGuo",
   "engines": {
     "vscode": "^1.90.0"
@@ -22,19 +22,23 @@
     "commands": [
       {
         "command": "go-spring.add-bean-tag",
-        "title": "go-spring: Add bean tag"
-      },
-      {
-        "command": "go-spring.add-bean-name",
-        "title": "go-spring: Add BeanName()"
-      },
-      {
-        "command": "go-spring.setter",
-        "title": "go-spring: Taged bean Setter "
+        "title": "go-spring: (line)Tag bean"
       },
       {
         "command": "go-spring.var-setter",
-        "title": "go-spring: Common Setter  "
+        "title": "go-spring: (line)Common Setter  "
+      },
+      {
+        "command": "go-spring.var-getter",
+        "title": "go-spring: (line)Common Getter  "
+      },
+      {
+        "command": "go-spring.add-bean-name",
+        "title": "go-spring: (struct)Add BeanName() "
+      },
+      {
+        "command": "go-spring.setter",
+        "title": "go-spring: (struct)Setter for beans"
       }
 
     ]

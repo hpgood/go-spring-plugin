@@ -15,3 +15,7 @@ Change Name() to BeanName()
 ### 1.0.2
 
 add common setter 
+
+### 1.0.3
+
+fix bug. focus on one line.
