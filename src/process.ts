@@ -297,14 +297,24 @@ export class CodeProcess {
         let arr=code.split(sp);
         let ret:Array<string>=[];
         arr.forEach((item)=>{
+
+            let idx=item.indexOf("//");
+            if(idx===-1){
+                idx=item.indexOf("/*");             
+            }
             let d=item;
+            let other="";
+            if(idx!==-1){
+                d=item.substring(0,idx);
+                other=" "+item.substring(idx);
+            }
             let beanResult=item.match(this.reBeanReg);
             let r=item.match(this.reNameReg);
             if(!beanResult &&  r && r.length>=2 ){
                 let name=r[1];
                 let snake=name.replace(/([A-Z])/g, "_$1").toLowerCase();
                 // let beanType=r[2];
-                let str=`${d} `+"`bean:\""+snake+"\"`";
+                let str=`${d} `+"`bean:\""+snake+"\"`"+other;
                 ret.push(str);
             }else{
                 ret.push(d);

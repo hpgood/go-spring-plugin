@@ -68,6 +68,10 @@ add common setter
 
 fix bug. focus on one line.
 
+### 1.0.4
+
+fix bug. deal with comment.
+
 ---
 
 ## Following extension guidelines

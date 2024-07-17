@@ -19,3 +19,7 @@ add common setter
 ### 1.0.3
 
 fix bug. focus on one line.
+
+### 1.0.4
+
+fix bug. deal with comment.

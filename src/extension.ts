@@ -22,12 +22,13 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposableTab = vscode.commands.registerTextEditorCommand('go-spring.add-bean-tag', (textEditor,edit) => {
 		const doc = textEditor.document;
         let selection: vscode.Selection | vscode.Range = textEditor.selection;
- 
+		const position = textEditor.selection.active;
         //获取选中区域
         if (selection.isEmpty) {
-            const start = new vscode.Position(0, 0);
-            const end = new vscode.Position(doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length);
-            selection = new vscode.Range(start, end);
+            // const start = new vscode.Position(0, 0);
+            // const end = new vscode.Position(doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length);
+            // selection = new vscode.Range(start, end);
+			selection = new vscode.Range(position.translate(-1), position);
         }
         
         let text = doc.getText(selection);
