@@ -72,12 +72,27 @@ fix bug. focus on one line.
 
 fix bug. deal with comment.
 
+### 1.0.5
+
+fix bug.array for common setter
+
+### 1.0.6
+
+fix gen code for common getter
+### 1.0.7
+
+gen code with InjectBean(any) bool
+
+### 1.0.8
+
+gen interface from struct.
+
 ---
 
 ## Following extension guidelines
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
+cmd.exe (不是powershell)
 vsce package 
 vsce publish
 

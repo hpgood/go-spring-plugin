@@ -23,3 +23,17 @@ fix bug. focus on one line.
 ### 1.0.4
 
 fix bug. deal with comment.
+
+### 1.0.5
+
+fix bug.array for common setter
+### 1.0.6
+
+fix gen code for common getter
+### 1.0.7
+
+gen code with InjectBean(any) bool
+
+### 1.0.8
+
+gen interface from struct.
