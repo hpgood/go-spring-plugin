@@ -37,3 +37,6 @@ gen code with InjectBean(any) bool
 ### 1.0.8
 
 gen interface from struct.
+### 1.0.9
+
+fix: gen interface,select struct code bug.

@@ -612,42 +612,14 @@ export class CodeProcess {
 
         let insertLine=0;
 
+ 
         if(!isStruct){
-            //向上查找 struct 的名字
-            let line=selection.start.line;
-            for(let i=line-1;i>=0;i--){
-                let content=lines[i];
-                let r=content.match(this.reStructReg);
-                // vscode.window.showInformationMessage('check: content='+content);
-                if(r && r.length>=2){
-                    // vscode.window.showInformationMessage('check:result.length='+r.length+'r0='+r[0]+'r1='+r[1]);
-                    structName=r[1];
-                    isStruct=true;
-                    break;
-                } 
-            }
+            return {Code:"",Line:0,Err:"please select struct code"};
         }
-
 
         let selection_last=selection.end.line;
 
-        for(let i=selection_last+1;i<lines.length;i++){
-            let content=lines[i];
-            let r=content.match(this.reLastReg);
-
-            if(r){
-                insertLine=i+1;
-                break;
-            } 
-        }
-
-        if(!isStruct){
-            return {Code:"",Line:0,Err:"wrong struct"};
-        }
-
-        // vscode.window.showInformationMessage('find: insertLine='+insertLine);
-
-        // type beanT={bean:'',type:''};
+        insertLine=selection_last+1;
 
         let vars:Array<varT>=[];
         arr.forEach(element => {
@@ -695,8 +667,8 @@ export class CodeProcess {
 
             if(fullText.includes(methodName)){
                 interfaceCode+= sp;
-                interfaceCode+= `// get ${name} ${sp}`;
-                interfaceCode+= ` ${methodName}() ${beanType} ${sp}`;
+                interfaceCode+= `\t// get ${name} ${sp}`;
+                interfaceCode+= `\t${methodName}() ${beanType} ${sp}`;
             }
         });
 
